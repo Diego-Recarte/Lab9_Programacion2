@@ -29,5 +29,8 @@ public class Ruta {
     public String toString() {
         return codigo + " - " + nombre;
     }
+    public String getCiudad() {
+        return nombre;
+    }
 
 }

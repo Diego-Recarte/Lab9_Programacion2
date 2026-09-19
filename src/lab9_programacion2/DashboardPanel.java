@@ -114,7 +114,7 @@ public class DashboardPanel extends JPanel {
         );
 
         construirInterfaz();
-        cargarDatosEjemplo();
+     
     }
 
     private void construirInterfaz() {
@@ -250,77 +250,28 @@ public class DashboardPanel extends JPanel {
         return panel;
     }
 
-    private void cargarDatosEjemplo() {
-        panelRecepcion.agregarFila(
-                "PKG-001",
-                "Carlos López",
-                "ALTA",
-                "RECIBIDO"
-        );
+    
 
-        panelRecepcion.agregarFila(
-                "PKG-002",
-                "Ana Martínez",
-                "NORMAL",
-                "RECIBIDO"
-        );
+    public void agregarPaquete(String codigo, String cliente,String direccion,String ciudad,double peso, String prioridad ) {
+          PrioridadPaquete prioridadPaquete =
+            PrioridadPaquete.valueOf(  prioridad.toUpperCase() );
 
-        panelAlmacen.agregarFila(
-                "PKG-003",
-                "Barcelona",
-                "4.5 kg",
-                "URGENTE"
-        );
+            Paquete paquete = centro.crearPaquete(codigo, cliente,direccion, ciudad, peso,prioridadPaquete );
 
-        panelClasificacion.agregarFila(
-                "PKG-004",
-                "Clasificador 1",
-                "R02",
-                "CLASIFICANDO"
-        );
+            Runnable actualizar = () -> {
+                panelRecepcion.agregarFila(paquete.getCodigo(), paquete.getCliente(), paquete.getPrioridad(), paquete.getEstado() );
 
-        panelEmpaquetado.agregarFila(
-                "PKG-005",
-                "Empaquetador 1",
-                "2.0 kg",
-                "EMPAQUETANDO"
-        );
+                totalGenerados++;
+                totalEnProceso++;
 
-        panelExpedicion.agregarFila(
-                "PKG-006",
-                "R01",
-                "ALTA",
-                "EN_EXPEDICION"
-        );
+                agregarRegistro(  paquete.getCodigo()  + " recibido");
+            };
 
-        totalGenerados = 6;
-        totalEnProceso = 6;
-
-       
-    }
-
-    public void agregarPaquete(
-            String codigo,
-            String cliente,
-            String ciudad,
-            double peso,
-            String prioridad
-    ) {
-        SwingUtilities.invokeLater(() -> {
-            panelRecepcion.agregarFila(
-                    codigo,
-                    cliente,
-                    prioridad,
-                    "RECIBIDO"
-            );
-
-            totalGenerados++;
-            totalEnProceso++;
-
-            agregarRegistro(
-                    codigo + " recibido"
-            );
-        });
+            if (SwingUtilities.isEventDispatchThread()) {
+                actualizar.run();
+            } else {
+                SwingUtilities.invokeLater(actualizar);
+            }
     }
 
     public void agregarRegistro(String mensaje) {
@@ -380,5 +331,247 @@ public class DashboardPanel extends JPanel {
     public int getTotalEnProceso() {
         return totalEnProceso;
     }
+    
+    private void eliminarPorCodigo(PanelZona panel,String codigo) {
+        for (int i = 0; i < panel.getModelo().getRowCount();i++) {
+
+            Object valor =panel.getModelo() .getValueAt(i, 0);
+
+            if (codigo.equals(valor)) {
+                panel.eliminarFila(i);
+                return;
+            }
+        }
+    }
+    
+    private void mostrarEnAlmacen(Paquete paquete) {
+        panelAlmacen.agregarFila( paquete.getCodigo(), paquete.getCiudad(), paquete.getPeso() + " kg",paquete.getPrioridad() );
+    }
+    private void mostrarEnClasificacion( Paquete paquete) {
+        String ruta = paquete.getRuta().getCodigo();
+
+        panelClasificacion.agregarFila( paquete.getCodigo(), "Clasificador 1", ruta, paquete.getEstado());
+    }
+    
+    private void mostrarEnEmpaquetado( Paquete paquete) {
+        panelEmpaquetado.agregarFila( paquete.getCodigo(), "Empaquetador 1", paquete.getPeso() + " kg",  paquete.getEstado());
+ 
+    }
+    private void mostrarEnExpedicion( Paquete paquete) {
+        String ruta =  paquete.getRuta().getCodigo();
+
+        panelExpedicion.agregarFila( paquete.getCodigo(), ruta,paquete.getPrioridad(),paquete.getEstado());
+    }
+    private Repartidor obtenerRepartidorPorRuta( Ruta ruta) {
+        if (ruta == null) {
+            return null;
+        }
+
+        for (int i = 0;i < centro.getListaRepartidores().tamanio();i++) {
+
+            Repartidor repartidor = centro.getListaRepartidores().obtener(i);
+
+            if (repartidor.getRuta() != null && repartidor.getRuta().getCodigo() .equals(  ruta.getCodigo() )) {
+
+                return repartidor;
+            }
+        }
+
+        return null;
+    }
+
+    
+    public void enviarAReparto() {
+        if (centro.getListaExpedicion().estaVacia()) {
+            agregarRegistro(
+                    "No hay paquetes en expedición"
+            );
+
+            return;
+        }
+
+        Paquete paquete =
+                centro.getListaExpedicion()
+                        .obtener(0);
+
+        Repartidor repartidor =
+                centro.asignarPaqueteARepartidor(
+                        paquete
+                );
+
+        if (repartidor == null) {
+            agregarRegistro(
+                    "No hay repartidores disponibles"
+            );
+
+            return;
+        }
+
+        eliminarPorCodigo(
+                panelExpedicion,
+                paquete.getCodigo()
+        );
+
+        panelRepartidores.actualizarTodos();
+
+        agregarRegistro(
+                paquete.getCodigo()
+                        + " asignado a "
+                        + repartidor.getNombre()
+        );
+    }
+    public void avanzarPaqueteManual() {/////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (!centro.getListaRecepcion().estaVacia()) {
+            Paquete paquete =centro.getListaRecepcion().obtener(0);
+
+            centro.almacenarPaquete(paquete);
+
+            eliminarPorCodigo(
+                    panelRecepcion,
+                    paquete.getCodigo()
+            );
+
+            mostrarEnAlmacen(paquete);
+
+            agregarRegistro(
+                    paquete.getCodigo()
+                            + " pasó a almacén"
+            );
+
+            return;
+        }
+
+        if (!centro.getListaAlmacen().estaVacia()) {
+            Paquete paquete =
+                    centro.getListaAlmacen().obtener(0);
+
+            boolean clasificado =
+                    centro.clasificarPaquete(paquete);
+
+            if (!clasificado) {
+                agregarRegistro(
+                        "No se encontró una ruta para "
+                                + paquete.getCiudad()
+                );
+
+                return;
+            }
+
+            eliminarPorCodigo(
+                    panelAlmacen,
+                    paquete.getCodigo()
+            );
+
+            mostrarEnClasificacion(paquete);
+
+            agregarRegistro(
+                    paquete.getCodigo()
+                            + " pasó a clasificación"
+            );
+
+            return;
+        }
+
+        if (!centro.getListaClasificacion()
+                .estaVacia()) {
+
+            Paquete paquete =
+                    centro.getListaClasificacion()
+                            .obtener(0);
+
+            centro.empaquetarPaquete(paquete);
+
+            eliminarPorCodigo(
+                    panelClasificacion,
+                    paquete.getCodigo()
+            );
+
+            mostrarEnEmpaquetado(paquete);
+
+            agregarRegistro(
+                    paquete.getCodigo()
+                            + " pasó a empaquetado"
+            );
+
+            return;
+        }
+
+        if (!centro.getListaEmpaquetado()
+                .estaVacia()) {
+
+            Paquete paquete =
+                    centro.getListaEmpaquetado()
+                            .obtener(0);
+
+            centro.finalizarEmpaquetado(paquete);
+
+            eliminarPorCodigo(
+                    panelEmpaquetado,
+                    paquete.getCodigo()
+            );
+
+            mostrarEnExpedicion(paquete);
+
+            agregarRegistro(
+                    paquete.getCodigo()
+                            + " pasó a expedición"
+            );
+
+            return;
+        }
+
+        if (!centro.getListaExpedicion().estaVacia()) {
+
+            enviarAReparto();
+            return;
+        }
+
+        agregarRegistro(
+                "No hay paquetes para avanzar"
+        );
+    }
+    public void entregarPaqueteManual() {
+        if (centro.getListaReparto().estaVacia()) {
+            agregarRegistro(
+                    "No hay paquetes en reparto"
+            );
+
+            return;
+        }
+
+        Paquete paquete =
+                centro.getListaReparto()
+                        .obtener(0);
+
+        Repartidor repartidor =
+                obtenerRepartidorPorRuta(
+                        paquete.getRuta()
+                );
+
+        centro.entregarPaquete(paquete);
+
+        if (repartidor != null) {
+            repartidor.registrarEntrega();
+
+            if (repartidor.getPaquetesCargados() == 0) {
+                repartidor.setEstado(
+                        EstadoRepartidor.REGRESANDO
+                );
+            }
+        }
+
+        panelRepartidores.actualizarTodos();
+
+        agregarRegistro(
+                paquete.getCodigo()
+                        + " entregado"
+        );
+    }
+    
+    
+    
+    
+    
+    
 
 }

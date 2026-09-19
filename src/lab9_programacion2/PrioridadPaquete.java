@@ -9,6 +9,6 @@ package lab9_programacion2;
  * @author denam
  */
 public enum PrioridadPaquete {
-    urgente, alta,normal,baja
+    URGENTE, ALTA,NORMAL,BAJA
     
 }

@@ -13,7 +13,7 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import javax.swing.BorderFactory;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -28,24 +28,42 @@ public class DialogoNuevoPaquete extends JDialog {
     private final JTextField txtCodigo;
     private final JTextField txtCliente;
     private final JTextField txtDireccion;
-    private final JTextField txtCiudad;
     private final JTextField txtPeso;
 
+    private final JComboBox<String> comboCiudad;
     private final JComboBox<String> comboPrioridad;
 
     private boolean paqueteCreado;
 
     public DialogoNuevoPaquete(JFrame padre) {
-        super(padre, "Registrar nuevo paquete", true);
+        super(
+                padre,
+                "Registrar nuevo paquete",
+                true
+        );
 
         txtCodigo = new JTextField();
         txtCliente = new JTextField();
         txtDireccion = new JTextField();
-        txtCiudad = new JTextField();
         txtPeso = new JTextField();
 
+        comboCiudad = new JComboBox<>(
+                new String[]{
+                        "Seleccione una ciudad",
+                        "Tegucigalpa",
+                        "San Pedro",
+                        "Tela",
+                        "Guatemala"
+                }
+        );
+
         comboPrioridad = new JComboBox<>(
-                new String[]{"URGENTE", "ALTA", "NORMAL", "BAJA"}
+                new String[]{
+                        "URGENTE",
+                        "ALTA",
+                        "NORMAL",
+                        "BAJA"
+                }
         );
 
         paqueteCreado = false;
@@ -57,29 +75,91 @@ public class DialogoNuevoPaquete extends JDialog {
     }
 
     private void construirInterfaz() {
-        JPanel contenido = new JPanel(new BorderLayout(10, 10));
-        contenido.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        JPanel contenido = new JPanel(
+                new BorderLayout(10, 10)
+        );
 
-        JLabel titulo = new JLabel("Información del paquete");
+        contenido.setBorder(
+                javax.swing.BorderFactory
+                        .createEmptyBorder(
+                                15,
+                                15,
+                                15,
+                                15
+                        )
+        );
+
+        JLabel titulo = new JLabel(
+                "Información del paquete"
+        );
+
         titulo.setFont(TemaUI.SUBTITULO);
         titulo.setForeground(TemaUI.AZUL_OSCURO);
 
-        contenido.add(titulo, BorderLayout.NORTH);
-        contenido.add(crearFormulario(), BorderLayout.CENTER);
-        contenido.add(crearBotones(), BorderLayout.SOUTH);
+        contenido.add(
+                titulo,
+                BorderLayout.NORTH
+        );
+
+        contenido.add(
+                crearFormulario(),
+                BorderLayout.CENTER
+        );
+
+        contenido.add(
+                crearBotones(),
+                BorderLayout.SOUTH
+        );
 
         setContentPane(contenido);
     }
 
     private JPanel crearFormulario() {
-        JPanel formulario = new JPanel(new GridBagLayout());
+        JPanel formulario = new JPanel(
+                new GridBagLayout()
+        );
 
-        agregarCampo(formulario, "Código:", txtCodigo, 0);
-        agregarCampo(formulario, "Cliente:", txtCliente, 1);
-        agregarCampo(formulario, "Dirección:", txtDireccion, 2);
-        agregarCampo(formulario, "Ciudad:", txtCiudad, 3);
-        agregarCampo(formulario, "Peso (kg):", txtPeso, 4);
-        agregarCampo(formulario, "Prioridad:", comboPrioridad, 5);
+        agregarCampo(
+                formulario,
+                "Código:",
+                txtCodigo,
+                0
+        );
+
+        agregarCampo(
+                formulario,
+                "Cliente:",
+                txtCliente,
+                1
+        );
+
+        agregarCampo(
+                formulario,
+                "Dirección:",
+                txtDireccion,
+                2
+        );
+
+        agregarCampo(
+                formulario,
+                "Ciudad:",
+                comboCiudad,
+                3
+        );
+
+        agregarCampo(
+                formulario,
+                "Peso (kg):",
+                txtPeso,
+                4
+        );
+
+        agregarCampo(
+                formulario,
+                "Prioridad:",
+                comboPrioridad,
+                5
+        );
 
         return formulario;
     }
@@ -90,8 +170,16 @@ public class DialogoNuevoPaquete extends JDialog {
             java.awt.Component componente,
             int fila
     ) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 6, 6, 6);
+        GridBagConstraints gbc =
+                new GridBagConstraints();
+
+        gbc.insets = new Insets(
+                6,
+                6,
+                6,
+                6
+        );
+
         gbc.anchor = GridBagConstraints.WEST;
 
         gbc.gridx = 0;
@@ -99,23 +187,39 @@ public class DialogoNuevoPaquete extends JDialog {
         gbc.weightx = 0;
         gbc.fill = GridBagConstraints.NONE;
 
-        panel.add(new JLabel(etiqueta), gbc);
+        panel.add(
+                new JLabel(etiqueta),
+                gbc
+        );
 
         gbc.gridx = 1;
         gbc.weightx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        panel.add(componente, gbc);
+        panel.add(
+                componente,
+                gbc
+        );
     }
 
     private JPanel crearBotones() {
         JPanel panel = new JPanel();
 
-        JButton btnGuardar = new JButton("Guardar");
-        JButton btnCancelar = new JButton("Cancelar");
+        JButton btnGuardar = new JButton(
+                "Guardar"
+        );
 
-        btnGuardar.addActionListener(e -> guardarPaquete());
-        btnCancelar.addActionListener(e -> dispose());
+        JButton btnCancelar = new JButton(
+                "Cancelar"
+        );
+
+        btnGuardar.addActionListener(
+                e -> guardarPaquete()
+        );
+
+        btnCancelar.addActionListener(
+                e -> dispose()
+        );
 
         panel.add(btnGuardar);
         panel.add(btnCancelar);
@@ -126,7 +230,7 @@ public class DialogoNuevoPaquete extends JDialog {
     private void guardarPaquete() {
         if (txtCodigo.getText().trim().isEmpty()
                 || txtCliente.getText().trim().isEmpty()
-                || txtCiudad.getText().trim().isEmpty()
+                || txtDireccion.getText().trim().isEmpty()
                 || txtPeso.getText().trim().isEmpty()) {
 
             JOptionPane.showMessageDialog(
@@ -139,8 +243,21 @@ public class DialogoNuevoPaquete extends JDialog {
             return;
         }
 
+        if (comboCiudad.getSelectedIndex() == 0) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Selecciona una ciudad.",
+                    "Ciudad requerida",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            return;
+        }
+
         try {
-            double peso = Double.parseDouble(txtPeso.getText().trim());
+            double peso = Double.parseDouble(
+                    txtPeso.getText().trim()
+            );
 
             if (peso <= 0) {
                 throw new NumberFormatException();
@@ -158,6 +275,7 @@ public class DialogoNuevoPaquete extends JDialog {
             );
         }
     }
+
     public boolean isPaqueteCreado() {
         return paqueteCreado;
     }
@@ -175,15 +293,20 @@ public class DialogoNuevoPaquete extends JDialog {
     }
 
     public String getCiudad() {
-        return txtCiudad.getText().trim();
+        return comboCiudad
+                .getSelectedItem()
+                .toString();
     }
 
     public double getPeso() {
-        return Double.parseDouble(txtPeso.getText().trim());
+        return Double.parseDouble(
+                txtPeso.getText().trim()
+        );
     }
 
     public String getPrioridad() {
-        return comboPrioridad.getSelectedItem().toString();
+        return comboPrioridad
+                .getSelectedItem()
+                .toString();
     }
-
 }

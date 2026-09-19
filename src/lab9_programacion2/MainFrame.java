@@ -38,6 +38,9 @@ public class MainFrame extends JFrame {
     private final JButton btnNuevoPaquete;
     private final JButton btnDashboard;
     private final JButton btnEstadisticas;
+    
+    private final JButton btnAvanzar;
+    private final JButton btnEntregar;
 
     public MainFrame() {
         setTitle("Centro Logístico de Paquetería");
@@ -77,6 +80,15 @@ public class MainFrame extends JFrame {
         );
         btnEstadisticas = crearBoton(
                 "Estadísticas",
+                TemaUI.AZUL_OSCURO
+        );
+        ///////////////////////////////////////////////////////////////////////////
+        btnAvanzar = crearBoton(
+                "Avanzar paquete",
+                TemaUI.AZUL_OSCURO
+        );
+        btnEntregar = crearBoton(
+                "Avanzar paquete",
                 TemaUI.AZUL_OSCURO
         );
 
@@ -164,6 +176,8 @@ public class MainFrame extends JFrame {
         barraBotones.add(btnNuevoPaquete);
         barraBotones.add(btnDashboard);
         barraBotones.add(btnEstadisticas);
+        barraBotones.add(btnAvanzar);
+         barraBotones.add(btnEntregar);
 
         encabezado.add(
                 panelTitulo,
@@ -237,6 +251,15 @@ public class MainFrame extends JFrame {
                     "Simulación reanudada"
             );
         });
+        
+        //////////////////////////////////////////////////////////////////
+        ///
+        btnAvanzar.addActionListener(e -> {
+            dashboardPanel.avanzarPaqueteManual();
+        });
+        btnEntregar.addActionListener(e -> {
+            dashboardPanel.entregarPaqueteManual();
+        });
     }
 
     private void abrirDialogoNuevoPaquete() {
@@ -249,6 +272,7 @@ public class MainFrame extends JFrame {
             dashboardPanel.agregarPaquete(
                     dialogo.getCodigo(),
                     dialogo.getCliente(),
+                    dialogo.getDireccion(),
                     dialogo.getCiudad(),
                     dialogo.getPeso(),
                     dialogo.getPrioridad()

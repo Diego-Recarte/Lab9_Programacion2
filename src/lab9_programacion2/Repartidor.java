@@ -83,6 +83,15 @@ public class Repartidor {
     public boolean tieneEspacio() {
         return paquetesCargados < capacidad;
     }
+    
+    public boolean asignarPaquete(Paquete paquete) {
+        if (!tieneEspacio()) {
+            return false;
+        }
+
+        cargarPaquete();
+        return true;
+    }
 
 
 }

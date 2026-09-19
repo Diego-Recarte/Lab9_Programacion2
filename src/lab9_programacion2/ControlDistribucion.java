@@ -10,7 +10,7 @@ package lab9_programacion2;
  */
 public class ControlDistribucion {
     
-    private final ListaEnlazada<Paquete> listaRecepcion;
+   private final ListaEnlazada<Paquete> listaRecepcion;
     private final ListaEnlazada<Paquete> listaAlmacen;
     private final ListaEnlazada<Paquete> listaClasificacion;
     private final ListaEnlazada<Paquete> listaEmpaquetado;
@@ -26,7 +26,7 @@ public class ControlDistribucion {
     private int totalEntregados;
     private int totalDevueltos;
 
-    public ControlDistribucion () {
+    public ControlDistribucion() {
         listaRecepcion = new ListaEnlazada<>();
         listaAlmacen = new ListaEnlazada<>();
         listaClasificacion = new ListaEnlazada<>();
@@ -48,37 +48,73 @@ public class ControlDistribucion {
     }
 
     private void crearRutasIniciales() {
-        Ruta ruta1 = new Ruta("R01", "Teguicigalpa" );
+        listaRutas.agregar(
+                new Ruta("R01", "Tegucigalpa")
+        );
 
-        Ruta ruta2 = new Ruta("R02", "San Pedro");
+        listaRutas.agregar(
+                new Ruta("R02", "San Pedro")
+        );
 
-        Ruta ruta3 = new Ruta("R03", "Tela" );
+        listaRutas.agregar(
+                new Ruta("R03", "Tela")
+        );
 
-        Ruta ruta4 = new Ruta("R04", "Guatemala" );
-
-        listaRutas.agregar(ruta1);
-        listaRutas.agregar(ruta2);
-        listaRutas.agregar(ruta3);
-        listaRutas.agregar(ruta4);
+        listaRutas.agregar(
+                new Ruta("R04", "Guatemala")
+        );
     }
 
     private void crearRepartidoresIniciales() {
-        Repartidor repartidor1 = new Repartidor("RPD-001", "Repartidor 1", 5  );
+        listaRepartidores.agregar(
+                new Repartidor(
+                        "RPD-001",
+                        "Repartidor 1",
+                        5
+                )
+        );
 
-        Repartidor repartidor2 = new Repartidor("RPD-002", "Repartidor 2", 4 );
+        listaRepartidores.agregar(
+                new Repartidor(
+                        "RPD-002",
+                        "Repartidor 2",
+                        4
+                )
+        );
 
-        Repartidor repartidor3 = new Repartidor( "RPD-003",  "Repartidor 3",  6 );
+        listaRepartidores.agregar(
+                new Repartidor(
+                        "RPD-003",
+                        "Repartidor 3",
+                        6
+                )
+        );
 
-        Repartidor repartidor4 = new Repartidor( "RPD-004",  "Repartidor 4", 5  );
-
-        listaRepartidores.agregar(repartidor1);
-        listaRepartidores.agregar(repartidor2);
-        listaRepartidores.agregar(repartidor3);
-        listaRepartidores.agregar(repartidor4);
+        listaRepartidores.agregar(
+                new Repartidor(
+                        "RPD-004",
+                        "Repartidor 4",
+                        5
+                )
+        );
     }
 
-    public Paquete crearPaquete(String codigo, String cliente, String direccion,String ciudad,double peso, PrioridadPaquete prioridad) {
-        Paquete paquete = new Paquete(codigo, cliente, direccion, ciudad, peso,  prioridad );
+    public Paquete crearPaquete(
+            String codigo,
+            String cliente,
+            String direccion,
+            String ciudad,
+            double peso,
+            PrioridadPaquete prioridad
+    ) {
+        Paquete paquete = new Paquete(
+                codigo,
+                cliente,
+                direccion,
+                ciudad,
+                peso,
+                prioridad
+        );
 
         listaRecepcion.agregar(paquete);
         totalGenerados++;
@@ -86,90 +122,168 @@ public class ControlDistribucion {
         return paquete;
     }
 
-    public void almacenarPaquete(Paquete paquete) {
+    public void almacenarPaquete(
+            Paquete paquete
+    ) {
         listaRecepcion.eliminar(paquete);
 
-        paquete.setEstado( EstadoPaquete.ALMACENADO );
+        paquete.setEstado(
+                EstadoPaquete.ALMACENADO
+        );
 
         listaAlmacen.agregar(paquete);
     }
 
-    public void clasificarPaquete( Paquete paquete, Ruta ruta  ) {
+    public boolean clasificarPaquete(
+            Paquete paquete
+    ) {
+        if (!listaAlmacen.buscar(paquete)) {
+            return false;
+        }
+
+        Ruta ruta = buscarRutaPorCiudad(
+                paquete.getCiudad()
+        );
+
+        if (ruta == null) {
+            return false;
+        }
+
         listaAlmacen.eliminar(paquete);
 
-        paquete.setEstado(EstadoPaquete.CLASIFICANDO);
+        paquete.setEstado(
+                EstadoPaquete.CLASIFICANDO
+        );
 
         paquete.setRuta(ruta);
 
-        paquete.setEstado(EstadoPaquete.CLASIFICADO );
+        paquete.setEstado(
+                EstadoPaquete.CLASIFICADO
+        );
 
         listaClasificacion.agregar(paquete);
+
+        return true;
     }
 
-    public void empaquetarPaquete(Paquete paquete) {
+    private Ruta buscarRutaPorCiudad(
+            String ciudad
+    ) {
+        for (int i = 0;
+                i < listaRutas.tamanio();
+                i++) {
+
+            Ruta ruta = listaRutas.obtener(i);
+
+            if (ruta.getCiudad()
+                    .equalsIgnoreCase(ciudad)) {
+
+                return ruta;
+            }
+        }
+
+        return null;
+    }
+
+    public void empaquetarPaquete(
+            Paquete paquete
+    ) {
         listaClasificacion.eliminar(paquete);
 
-        paquete.setEstado(EstadoPaquete.EMPAQUETANDO);
+        paquete.setEstado(
+                EstadoPaquete.EMPAQUETANDO
+        );
 
         listaEmpaquetado.agregar(paquete);
     }
 
-    public void finalizarEmpaquetado(Paquete paquete) {
+    public void finalizarEmpaquetado(
+            Paquete paquete
+    ) {
         listaEmpaquetado.eliminar(paquete);
 
-        paquete.setEstado(EstadoPaquete.EMPAQUETADO  );
+        paquete.setEstado(
+                EstadoPaquete.EMPAQUETADO
+        );
 
         listaExpedicion.agregar(paquete);
+
+        paquete.setEstado(
+                EstadoPaquete.EN_EXPEDICION
+        );
     }
 
-    public void enviarAExpedicion(Paquete paquete) {
+    public void enviarAExpedicion(
+            Paquete paquete
+    ) {
+        listaEmpaquetado.eliminar(paquete);
+
+        paquete.setEstado(
+                EstadoPaquete.EN_EXPEDICION
+        );
+
         if (!listaExpedicion.buscar(paquete)) {
             listaExpedicion.agregar(paquete);
         }
-
-        paquete.setEstado(EstadoPaquete.EN_EXPEDICION );
     }
 
-    public void asignarAReparto(Paquete paquete) {
+    public void asignarAReparto(
+            Paquete paquete
+    ) {
         listaExpedicion.eliminar(paquete);
 
-        paquete.setEstado(EstadoPaquete.EN_REPARTO);
+        paquete.setEstado(
+                EstadoPaquete.EN_REPARTO
+        );
 
         listaReparto.agregar(paquete);
     }
 
-    public void entregarPaquete(Paquete paquete) {
+    public void entregarPaquete(
+            Paquete paquete
+    ) {
         listaReparto.eliminar(paquete);
 
-        paquete.setEstado(EstadoPaquete.ENTREGADO
+        paquete.setEstado(
+                EstadoPaquete.ENTREGADO
         );
 
         listaEntregados.agregar(paquete);
         totalEntregados++;
     }
 
-    public void devolverPaquete(Paquete paquete) {
+    public void devolverPaquete(
+            Paquete paquete
+    ) {
         listaReparto.eliminar(paquete);
 
         paquete.aumentarIntentos();
 
         if (paquete.puedeIntentarNuevamente()) {
-            paquete.setEstado(EstadoPaquete.NUEVO_INTENTO);
+            paquete.setEstado(
+                    EstadoPaquete.NUEVO_INTENTO
+            );
 
             listaExpedicion.agregar(paquete);
         } else {
-            paquete.setEstado(EstadoPaquete.DEVUELTO);
+            paquete.setEstado(
+                    EstadoPaquete.DEVUELTO
+            );
 
             listaDevueltos.agregar(paquete);
             totalDevueltos++;
         }
     }
 
-    public Paquete obtenerPaqueteRecepcion(int posicion) {
+    public Paquete obtenerPaqueteRecepcion(
+            int posicion
+    ) {
         return listaRecepcion.obtener(posicion);
     }
 
-    public Paquete obtenerPaqueteAlmacen(int posicion ) {
+    public Paquete obtenerPaqueteAlmacen(
+            int posicion
+    ) {
         return listaAlmacen.obtener(posicion);
     }
 
@@ -210,38 +324,48 @@ public class ControlDistribucion {
     }
 
     public int getTotalEnProceso() {
-        return totalGenerados  - totalEntregados  - totalDevueltos;
+        return totalGenerados
+                - totalEntregados
+                - totalDevueltos;
     }
 
-    public ListaEnlazada<Paquete> getListaRecepcion() {
+    public ListaEnlazada<Paquete>
+            getListaRecepcion() {
         return listaRecepcion;
     }
 
-    public ListaEnlazada<Paquete> getListaAlmacen() {
+    public ListaEnlazada<Paquete>
+            getListaAlmacen() {
         return listaAlmacen;
     }
 
-    public ListaEnlazada<Paquete> getListaClasificacion() {
+    public ListaEnlazada<Paquete>
+            getListaClasificacion() {
         return listaClasificacion;
     }
 
-    public ListaEnlazada<Paquete> getListaEmpaquetado() {
+    public ListaEnlazada<Paquete>
+            getListaEmpaquetado() {
         return listaEmpaquetado;
     }
 
-    public ListaEnlazada<Paquete> getListaExpedicion() {
+    public ListaEnlazada<Paquete>
+            getListaExpedicion() {
         return listaExpedicion;
     }
 
-    public ListaEnlazada<Paquete> getListaReparto() {
+    public ListaEnlazada<Paquete>
+            getListaReparto() {
         return listaReparto;
     }
 
-    public ListaEnlazada<Paquete> getListaEntregados() {
+    public ListaEnlazada<Paquete>
+            getListaEntregados() {
         return listaEntregados;
     }
 
-    public ListaEnlazada<Paquete> getListaDevueltos() {
+    public ListaEnlazada<Paquete>
+            getListaDevueltos() {
         return listaDevueltos;
     }
 
@@ -250,8 +374,70 @@ public class ControlDistribucion {
         return listaRepartidores;
     }
 
-    public ListaEnlazada<Ruta> getListaRutas() {
+    public ListaEnlazada<Ruta>
+            getListaRutas() {
         return listaRutas;
+    }
+
+    public int getCantidadRecepcion() {
+        return listaRecepcion.tamanio();
+    }
+
+    public int getCantidadAlmacen() {
+        return listaAlmacen.tamanio();
+    }
+
+    public int getCantidadClasificacion() {
+        return listaClasificacion.tamanio();
+    }
+
+    public int getCantidadEmpaquetado() {
+        return listaEmpaquetado.tamanio();
+    }
+
+    public int getCantidadExpedicion() {
+        return listaExpedicion.tamanio();
+    }
+
+    public int getCantidadReparto() {
+        return listaReparto.tamanio();
+    }
+    public Repartidor asignarPaqueteARepartidor( Paquete paquete  ) {
+        if (!listaExpedicion.buscar(paquete)) {
+            return null;
+        }
+
+        for (int i = 0;
+                i < listaRepartidores.tamanio();
+                i++) {
+
+            Repartidor repartidor =
+                    listaRepartidores.obtener(i);
+
+            if (repartidor.tieneEspacio()) {
+                listaExpedicion.eliminar(paquete);
+
+                paquete.setEstado(
+                        EstadoPaquete.EN_REPARTO
+                );
+
+                listaReparto.agregar(paquete);
+
+                repartidor.asignarPaquete(paquete);
+
+                repartidor.setRuta(
+                        paquete.getRuta()
+                );
+
+                repartidor.setEstado(
+                        EstadoRepartidor.CARGANDO
+                );
+
+                return repartidor;
+            }
+        }
+
+        return null;
     }
     
     
