@@ -9,6 +9,7 @@ package lab9_programacion2;
  * @author denam
  */
 
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -36,21 +37,19 @@ public class MainFrame extends JFrame {
     private final JButton btnDetener;
     private final JButton btnReiniciar;
     private final JButton btnNuevoPaquete;
+    private final JButton btnAvanzar;
+    private final JButton btnEntregar;
     private final JButton btnDashboard;
     private final JButton btnEstadisticas;
-    
-    
+
     private Simulador simulador;
 
     public MainFrame() {
         setTitle("Centro Logístico de Paquetería");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         setMinimumSize(new Dimension(1250, 800));
-        setSize(1400, 800);
-        
+        setSize(1400, 850);
         setLocationRelativeTo(null);
-         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         cardLayout = new CardLayout();
         panelCentral = new JPanel(cardLayout);
@@ -59,39 +58,107 @@ public class MainFrame extends JFrame {
         dashboardPanel = new DashboardPanel();
         estadisticasPanel = new PanelEstadisticas();
 
-        panelCentral.add(dashboardPanel, "DASHBOARD");
-        panelCentral.add(estadisticasPanel, "ESTADISTICAS");
+        panelCentral.add(
+                dashboardPanel,
+                "DASHBOARD"
+        );
 
-        btnIniciar = crearBoton("Iniciar", TemaUI.VERDE);
-        btnPausar = crearBoton("Pausar", TemaUI.NARANJA);
-        btnReanudar = crearBoton("Reanudar", TemaUI.AZUL);
-        btnDetener = crearBoton("Detener", TemaUI.ROJO);
-        btnReiniciar = crearBoton("Reiniciar",  new Color(100, 100, 100));
-        btnNuevoPaquete = crearBoton("Nuevo paquete", TemaUI.AZUL );
-        btnDashboard = crearBoton( "Dashboard", TemaUI.AZUL_OSCURO );
-        btnEstadisticas = crearBoton("Estadísticas",TemaUI.AZUL_OSCURO );
-        ///////////////////////////////////////////////////////////////////////////
-        
-        simulador = new Simulador(dashboardPanel.getControl(), dashboardPanel);
+        panelCentral.add(
+                estadisticasPanel,
+                "ESTADISTICAS"
+        );
+
+        simulador = new Simulador(
+                dashboardPanel.getControl(),
+                dashboardPanel
+        );
+
+        btnIniciar = crearBoton(
+                "Iniciar",
+                TemaUI.VERDE
+        );
+
+        btnPausar = crearBoton(
+                "Pausar",
+                TemaUI.NARANJA
+        );
+
+        btnReanudar = crearBoton(
+                "Reanudar",
+                TemaUI.AZUL
+        );
+
+        btnDetener = crearBoton(
+                "Detener",
+                TemaUI.ROJO
+        );
+
+        btnReiniciar = crearBoton(
+                "Reiniciar",
+                new Color(100, 100, 100)
+        );
+
+        btnNuevoPaquete = crearBoton(
+                "Nuevo paquete",
+                TemaUI.AZUL
+        );
+
+        btnAvanzar = crearBoton(
+                "Avanzar paquete",
+                TemaUI.AZUL_OSCURO
+        );
+
+        btnEntregar = crearBoton(
+                "Entregar paquete",
+                TemaUI.VERDE
+        );
+
+        btnDashboard = crearBoton(
+                "Dashboard",
+                TemaUI.AZUL_OSCURO
+        );
+
+        btnEstadisticas = crearBoton(
+                "Estadísticas",
+                TemaUI.AZUL_OSCURO
+        );
 
         construirInterfaz();
         configurarEventos();
 
-        cardLayout.show(panelCentral, "DASHBOARD");
+        cardLayout.show(
+                panelCentral,
+                "DASHBOARD"
+        );
     }
 
     private void construirInterfaz() {
-        setLayout(new BorderLayout(10, 10));
+        setLayout(
+                new BorderLayout(
+                        10,
+                        10
+                )
+        );
 
         JPanel contenedor = new JPanel(
-                new BorderLayout(10, 10)
+                new BorderLayout(
+                        10,
+                        10
+                )
         );
 
         contenedor.setBorder(
-                new EmptyBorder(10, 10, 10, 10)
+                new EmptyBorder(
+                        10,
+                        10,
+                        10,
+                        10
+                )
         );
 
-        contenedor.setBackground(TemaUI.FONDO);
+        contenedor.setBackground(
+                TemaUI.FONDO
+        );
 
         contenedor.add(
                 crearEncabezado(),
@@ -103,16 +170,27 @@ public class MainFrame extends JFrame {
                 BorderLayout.CENTER
         );
 
-        add(contenedor, BorderLayout.CENTER);
+        add(
+                contenedor,
+                BorderLayout.CENTER
+        );
     }
 
     private JPanel crearEncabezado() {
         JPanel encabezado = new JPanel(
-                new BorderLayout(10, 10)
+                new BorderLayout(
+                        10,
+                        10
+                )
         );
 
-        encabezado.setBackground(TemaUI.BLANCO);
-        encabezado.setBorder(TemaUI.bordePanel());
+        encabezado.setBackground(
+                TemaUI.BLANCO
+        );
+
+        encabezado.setBorder(
+                TemaUI.bordePanel()
+        );
 
         JPanel panelTitulo = new JPanel(
                 new FlowLayout(
@@ -125,17 +203,24 @@ public class MainFrame extends JFrame {
         panelTitulo.setOpaque(false);
 
         JLabel titulo = new JLabel(
-                "CENTRO LOGÍSTICO"
+                "📦 CENTRO LOGÍSTICO"
         );
 
-        titulo.setFont(TemaUI.TITULO);
-        titulo.setForeground(TemaUI.AZUL_OSCURO);
+        titulo.setFont(
+                TemaUI.TITULO
+        );
+
+        titulo.setForeground(
+                TemaUI.AZUL_OSCURO
+        );
 
         JLabel estado = new JLabel(
                 "Estado: DETENIDO"
         );
 
-        estado.setForeground(TemaUI.GRIS_TEXTO);
+        estado.setForeground(
+                TemaUI.GRIS_TEXTO
+        );
 
         panelTitulo.add(titulo);
         panelTitulo.add(estado);
@@ -156,9 +241,10 @@ public class MainFrame extends JFrame {
         barraBotones.add(btnDetener);
         barraBotones.add(btnReiniciar);
         barraBotones.add(btnNuevoPaquete);
+        barraBotones.add(btnAvanzar);
+        barraBotones.add(btnEntregar);
         barraBotones.add(btnDashboard);
         barraBotones.add(btnEstadisticas);
-       
 
         encabezado.add(
                 panelTitulo,
@@ -178,6 +264,23 @@ public class MainFrame extends JFrame {
             abrirDialogoNuevoPaquete();
         });
 
+        btnIniciar.addActionListener(e -> {
+            simulador.iniciar();
+
+            dashboardPanel.agregarRegistro(
+                    "Simulación iniciada"
+            );
+        });
+
+        btnDetener.addActionListener(e -> {
+            simulador.detener();
+
+            dashboardPanel.agregarRegistro(
+                    "Simulación detenida"
+            );
+        });
+
+      
         btnDashboard.addActionListener(e -> {
             cardLayout.show(
                     panelCentral,
@@ -200,28 +303,13 @@ public class MainFrame extends JFrame {
         });
 
         btnReiniciar.addActionListener(e -> {
+            simulador.detener();
             dashboardPanel.limpiarTodo();
             estadisticasPanel.limpiar();
 
             cardLayout.show(
                     panelCentral,
                     "DASHBOARD"
-            );
-        });
-
-        btnDetener.addActionListener(e -> {
-            simulador.detener();
-
-            dashboardPanel.agregarRegistro(
-                    "Detenido"
-            );
-        });
-
-        btnIniciar.addActionListener(e -> {
-            simulador.iniciar();
-
-            dashboardPanel.agregarRegistro(
-                    "inicio"
             );
         });
 
@@ -236,10 +324,6 @@ public class MainFrame extends JFrame {
                     "Simulación reanudada"
             );
         });
-        
-        //////////////////////////////////////////////////////////////////
-        ///
-       
     }
 
     private void abrirDialogoNuevoPaquete() {
@@ -266,13 +350,27 @@ public class MainFrame extends JFrame {
     ) {
         JButton boton = new JButton(texto);
 
-        boton.setFont(TemaUI.NORMAL);
-        boton.setForeground(Color.WHITE);
-        boton.setBackground(color);
+        boton.setFont(
+                TemaUI.NORMAL
+        );
+
+        boton.setForeground(
+                Color.WHITE
+        );
+
+        boton.setBackground(
+                color
+        );
+
         boton.setFocusPainted(false);
 
         boton.setBorder(
-                BorderFactory.createEmptyBorder( 8,14,8, 14 )
+                BorderFactory.createEmptyBorder(
+                        8,
+                        14,
+                        8,
+                        14
+                )
         );
 
         return boton;

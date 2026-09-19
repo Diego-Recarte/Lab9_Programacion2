@@ -9,8 +9,6 @@ package lab9_programacion2;
  * @author denam
  */
 
-
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -21,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 public class DashboardPanel extends JPanel {
     private final PanelZona panelRecepcion;
