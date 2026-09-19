@@ -50,6 +50,7 @@ public class MainFrame extends JFrame {
         setMinimumSize(new Dimension(1250, 800));
         setSize(1400, 850);
         setLocationRelativeTo(null);
+         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         cardLayout = new CardLayout();
         panelCentral = new JPanel(cardLayout);
