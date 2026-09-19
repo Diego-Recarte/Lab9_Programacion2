@@ -1,0 +1,65 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package lab9_programacion2;
+
+/**
+ *
+ * @author denam
+ */
+public class Repartidor {
+ 
+
+    private String id;
+    private String nombre;
+    private int capacidad;
+    private Ruta ruta;
+    private EstadoRepartidor estado;
+    private int paquetesEntregados;
+
+    public Repartidor( String id,String nombre, int capacidad) {
+        this.id = id;
+        this.nombre = nombre;
+        this.capacidad = capacidad;
+        this.estado = EstadoRepartidor.DISPONIBLE;
+        this.paquetesEntregados = 0;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public int getCapacidad() {
+        return capacidad;
+    }
+
+    public Ruta getRuta() {
+        return ruta;
+    }
+
+    public EstadoRepartidor getEstado() {
+        return estado;
+    }
+
+    public int getPaquetesEntregados() {
+        return paquetesEntregados;
+    }
+
+    public void setRuta(Ruta ruta) {
+        this.ruta = ruta;
+    }
+
+    public void setEstado(EstadoRepartidor estado) {
+        this.estado = estado;
+    }
+
+    public void registrarEntrega() {
+        paquetesEntregados++;
+    }
+
+}
