@@ -29,6 +29,7 @@ public class DashboardPanel extends JPanel {
     private final PanelZona panelClasificacion;
     private final PanelZona panelEmpaquetado;
     private final PanelZona panelExpedicion;
+    private final ControlDistribucion centro;
 
     private final PanelRepartidores panelRepartidores;
     private final JTextArea areaRegistro;
@@ -39,6 +40,7 @@ public class DashboardPanel extends JPanel {
     private int totalEnProceso;
 
     public DashboardPanel() {
+        centro = new ControlDistribucion();
         setLayout(new BorderLayout(10, 10));
         setBackground(TemaUI.FONDO);
 
@@ -97,7 +99,7 @@ public class DashboardPanel extends JPanel {
                 }
         );
 
-        panelRepartidores = new PanelRepartidores();
+        panelRepartidores = new PanelRepartidores(centro.getListaRepartidores());
 
         areaRegistro = new JTextArea();
         areaRegistro.setEditable(false);
@@ -294,15 +296,7 @@ public class DashboardPanel extends JPanel {
         totalGenerados = 6;
         totalEnProceso = 6;
 
-        agregarRegistro("PKG-001 recibido");
-        agregarRegistro("PKG-003 almacenado");
-        agregarRegistro(
-                "PKG-004 tomado por Clasificador-1"
-        );
-        agregarRegistro("PKG-005 en empaquetado");
-        agregarRegistro(
-                "PKG-006 listo para expedición"
-        );
+       
     }
 
     public void agregarPaquete(

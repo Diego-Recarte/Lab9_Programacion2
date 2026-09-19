@@ -131,7 +131,7 @@ public class MainFrame extends JFrame {
         panelTitulo.setOpaque(false);
 
         JLabel titulo = new JLabel(
-                "📦 CENTRO LOGÍSTICO"
+                "CENTRO LOGÍSTICO"
         );
 
         titulo.setFont(TemaUI.TITULO);

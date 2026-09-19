@@ -10,110 +10,228 @@ package lab9_programacion2;
  */
 
 import java.awt.GridLayout;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+
+
 public class PanelRepartidores extends JPanel {
 
-    private final TarjetaRepartidor[] repartidores;
+    private final ListaEnlazada<Repartidor>
+            listaRepartidores;
 
-    public PanelRepartidores() {
-        setLayout(new GridLayout(1, 4, 10, 10));
+    private TarjetaRepartidor[] tarjetas;
+
+    public PanelRepartidores(
+            ListaEnlazada<Repartidor>
+                    listaRepartidores
+    ) {
+        this.listaRepartidores =
+                listaRepartidores;
+
+        setLayout(
+                new GridLayout(1, 4, 10, 10)
+        );
+
         setBackground(TemaUI.FONDO);
 
-        repartidores = new TarjetaRepartidor[4];
+        cargarRepartidores();
+    }
 
-        for (int i = 0; i < repartidores.length; i++) {
-            repartidores[i] = new TarjetaRepartidor(
-                    "Repartidor " + (i + 1),
-                    "DISPONIBLE",
-                    0,
-                    i == 0 ? 5 : i == 1 ? 4 : 6
-            );
+    private void cargarRepartidores() {
+        int cantidad =
+                listaRepartidores.tamanio();
 
-            add(repartidores[i]);
+        tarjetas = new TarjetaRepartidor[cantidad];
+
+        for (int i = 0; i < cantidad; i++) {
+            Repartidor repartidor =
+                    listaRepartidores.obtener(i);
+
+            tarjetas[i] =
+                    new TarjetaRepartidor(repartidor);
+
+            add(tarjetas[i]);
         }
     }
 
     public void actualizarRepartidor(
-            int posicion,
-            String estado,
-            int paquetes,
-            int capacidad
+            int posicion
     ) {
-        if (posicion < 0 || posicion >= repartidores.length) {
+        if (posicion < 0
+                || posicion >= tarjetas.length) {
             return;
         }
 
-        repartidores[posicion].actualizar(
-                estado,
-                paquetes,
-                capacidad
+        Repartidor repartidor =
+                listaRepartidores.obtener(posicion);
+
+        tarjetas[posicion].actualizar(
+                repartidor
         );
     }
 
+    public void actualizarTodos() {
+        for (int i = 0; i < tarjetas.length; i++) {
+            Repartidor repartidor =
+                    listaRepartidores.obtener(i);
+
+            tarjetas[i].actualizar(
+                    repartidor
+            );
+        }
+
+        revalidate();
+        repaint();
+    }
+
     public void limpiar() {
-        for (TarjetaRepartidor repartidor : repartidores) {
-            repartidor.actualizar("DISPONIBLE", 0, 0);
+        for (int i = 0; i < tarjetas.length; i++) {
+            Repartidor repartidor =
+                    listaRepartidores.obtener(i);
+
+            repartidor.setEstado(
+                    EstadoRepartidor.DISPONIBLE
+            );
+
+            repartidor.setRuta(null);
+            actualizarRepartidor(i);
         }
     }
 
-    private static class TarjetaRepartidor extends JPanel {
+    private static class TarjetaRepartidor
+            extends JPanel {
 
-        private final JLabel nombre;
-        private final JLabel estado;
-        private final JLabel capacidad;
+        private final JLabel etiquetaNombre;
+        private final JLabel etiquetaEstado;
+        private final JLabel etiquetaRuta;
+        private final JLabel etiquetaCapacidad;
+        private final JLabel etiquetaEntregados;
 
         public TarjetaRepartidor(
-                String nombre,
-                String estado,
-                int paquetes,
-                int capacidadMaxima
+                Repartidor repartidor
         ) {
-            setLayout(new GridLayout(3, 1, 2, 2));
+            setLayout(
+                    new GridLayout(5, 1, 2, 2)
+            );
+
             setBackground(TemaUI.BLANCO);
             setBorder(TemaUI.bordePanel());
 
-            this.nombre = new JLabel("🚚 " + nombre);
-            this.estado = new JLabel("Estado: " + estado);
-            this.capacidad = new JLabel(
-                    "Paquetes: " + paquetes + "/" + capacidadMaxima
+            etiquetaNombre = new JLabel();
+            etiquetaEstado = new JLabel();
+            etiquetaRuta = new JLabel();
+            etiquetaCapacidad = new JLabel();
+            etiquetaEntregados = new JLabel();
+
+            configurarEtiqueta(etiquetaNombre);
+            configurarEtiqueta(etiquetaEstado);
+            configurarEtiqueta(etiquetaRuta);
+            configurarEtiqueta(etiquetaCapacidad);
+            configurarEtiqueta(etiquetaEntregados);
+
+            etiquetaNombre.setFont(
+                    TemaUI.SUBTITULO
             );
 
-            this.nombre.setHorizontalAlignment(SwingConstants.CENTER);
-            this.estado.setHorizontalAlignment(SwingConstants.CENTER);
-            this.capacidad.setHorizontalAlignment(SwingConstants.CENTER);
+            add(etiquetaNombre);
+            add(etiquetaEstado);
+            add(etiquetaRuta);
+            add(etiquetaCapacidad);
+            add(etiquetaEntregados);
 
-            this.nombre.setFont(TemaUI.SUBTITULO);
-            this.estado.setFont(TemaUI.NORMAL);
-            this.capacidad.setFont(TemaUI.NORMAL);
+            actualizar(repartidor);
+        }
 
-            add(this.nombre);
-            add(this.estado);
-            add(this.capacidad);
+        private void configurarEtiqueta(
+                JLabel etiqueta
+        ) {
+            etiqueta.setHorizontalAlignment(
+                    SwingConstants.CENTER
+            );
+
+            etiqueta.setFont(
+                    TemaUI.NORMAL
+            );
         }
 
         public void actualizar(
-                String nuevoEstado,
-                int cantidad,
-                int capacidadMaxima
+                Repartidor repartidor
         ) {
-            estado.setText("Estado: " + nuevoEstado);
-            capacidad.setText(
-                    "Paquetes: " + cantidad + "/" + capacidadMaxima
+            etiquetaNombre.setText(
+                    "🚚 "
+                            + repartidor.getNombre()
             );
 
-            if ("EN_RUTA".equals(nuevoEstado)) {
-                estado.setForeground(TemaUI.VERDE);
-            } else if ("CARGANDO".equals(nuevoEstado)) {
-                estado.setForeground(TemaUI.NARANJA);
-            } else if ("FUERA_DE_SERVICIO".equals(nuevoEstado)) {
-                estado.setForeground(TemaUI.ROJO);
+            etiquetaEstado.setText(
+                    "Estado: "
+                            + repartidor.getEstado()
+            );
+
+            if (repartidor.getRuta() == null) {
+                etiquetaRuta.setText(
+                        "Ruta: Sin asignar"
+                );
             } else {
-                estado.setForeground(TemaUI.GRIS_TEXTO);
+                etiquetaRuta.setText(
+                        "Ruta: "
+                                + repartidor
+                                        .getRuta()
+                                        .getCodigo()
+                );
+            }
+
+            etiquetaCapacidad.setText(
+                    "Capacidad: " + repartidor .getPaquetesCargados()  + "/"   + repartidor .getCapacidad()
+            );
+
+            etiquetaEntregados.setText(
+                    "Entregados: "
+                            + repartidor
+                                    .getPaquetesEntregados()
+            );
+
+            cambiarColorEstado(
+                    repartidor.getEstado()
+            );
+        }
+
+        private void cambiarColorEstado(
+                EstadoRepartidor estado
+        ) {
+            switch (estado) {
+                case EN_RUTA:
+                    etiquetaEstado.setForeground(
+                            TemaUI.VERDE
+                    );
+                    break;
+
+                case CARGANDO:
+                    etiquetaEstado.setForeground(
+                            TemaUI.NARANJA
+                    );
+                    break;
+
+                case ENTREGANDO:
+                    etiquetaEstado.setForeground(
+                            TemaUI.AZUL
+                    );
+                    break;
+
+                case FUERA_DE_SERVICIO:
+                    etiquetaEstado.setForeground(
+                            TemaUI.ROJO
+                    );
+                    break;
+
+                default:
+                    etiquetaEstado.setForeground(
+                            TemaUI.GRIS_TEXTO
+                    );
+                    break;
             }
         }
     }
-
 }
