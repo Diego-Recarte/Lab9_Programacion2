@@ -8,8 +8,9 @@ package lab9_programacion2;
  *
  * @author denam
  */
+
+
 public class Repartidor {
- 
     private String id;
     private String nombre;
     private int capacidad;
@@ -17,8 +18,9 @@ public class Repartidor {
     private EstadoRepartidor estado;
     private int paquetesCargados;
     private int paquetesEntregados;
+    private final ListaEnlazada<Paquete> paquetes;
 
-    public Repartidor(String id, String nombre, int capacidad ) {
+    public Repartidor(String id, String nombre, int capacidad) {
         this.id = id;
         this.nombre = nombre;
         this.capacidad = capacidad;
@@ -26,6 +28,7 @@ public class Repartidor {
         this.ruta = null;
         this.paquetesCargados = 0;
         this.paquetesEntregados = 0;
+        this.paquetes = new ListaEnlazada<>();
     }
 
     public String getId() {
@@ -56,42 +59,52 @@ public class Repartidor {
         return paquetesEntregados;
     }
 
+    public ListaEnlazada<Paquete> getPaquetes() {
+        return paquetes;
+    }
+
     public void setRuta(Ruta ruta) {
         this.ruta = ruta;
     }
 
-    public void setEstado(
-            EstadoRepartidor estado
-    ) {
+    public void setEstado(EstadoRepartidor estado) {
         this.estado = estado;
-    }
-
-    public void cargarPaquete() {
-        if (paquetesCargados < capacidad) {
-            paquetesCargados++;
-        }
-    }
-
-    public void registrarEntrega() {
-        if (paquetesCargados > 0) {
-            paquetesCargados--;
-        }
-
-        paquetesEntregados++;
     }
 
     public boolean tieneEspacio() {
         return paquetesCargados < capacidad;
     }
-    
-    public boolean asignarPaquete(Paquete paquete) {
+
+    public boolean agregarPaquete(Paquete paquete) {
         if (!tieneEspacio()) {
             return false;
         }
 
-        cargarPaquete();
+        paquetes.agregar(paquete);
+        paquetesCargados++;
         return true;
     }
 
+    public Paquete sacarPrimerPaquete() {
+        if (paquetes.estaVacia()) {
+            return null;
+        }
 
+        Paquete paquete = paquetes.obtener(0);
+        paquetes.eliminar(paquete);
+        paquetesCargados--;
+        return paquete;
+    }
+
+    public void registrarEntrega() {
+        paquetesEntregados++;
+    }
+
+    public void limpiarCarga() {
+        while (!paquetes.estaVacia()) {
+            paquetes.eliminar(paquetes.obtener(0));
+        }
+
+        paquetesCargados = 0;
+    }
 }

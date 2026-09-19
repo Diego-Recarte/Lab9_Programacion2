@@ -72,20 +72,54 @@ public class ListaEnlazada<T> {
         tamanio++;
     }
 
-    public synchronized T eliminarPrimeroEsperando()
-            throws InterruptedException {
-
+    public synchronized T eliminarPrimeroEsperando() throws InterruptedException {
+        
         while (cabeza == null) {
             wait();
         }
 
-        T dato = cabeza.getDato();
-        cabeza = cabeza.getSiguiente();
+        Nodo<T> actual = cabeza;
+        Nodo<T> anterior = null;
+
+        Nodo<T> mejorNodo = cabeza;
+        Nodo<T> anteriorMejor = null;
+
+        while (actual != null) {
+            if (actual.getDato()
+                    instanceof Paquete) {
+
+                Paquete paqueteActual =
+                        (Paquete) actual.getDato();
+
+                Paquete mejorPaquete =
+                        (Paquete) mejorNodo.getDato();
+
+                if (paqueteActual.getPrioridad().getNivel() < mejorPaquete  .getPrioridad().getNivel()) {
+
+                    mejorNodo = actual;
+                    anteriorMejor = anterior;
+                }
+            }
+
+            anterior = actual;
+            actual = actual.getSiguiente();
+        }
+
+        if (anteriorMejor == null) {
+            cabeza = mejorNodo.getSiguiente();
+        } else {
+            anteriorMejor.setSiguiente(
+                    mejorNodo.getSiguiente()
+            );
+        }
+
         tamanio--;
 
         notifyAll();
 
-        return dato;
+        return mejorNodo.getDato();
+
+        
     }
 
     public synchronized void eliminar(T dato) {

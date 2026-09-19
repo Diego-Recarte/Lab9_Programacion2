@@ -39,8 +39,6 @@ public class MainFrame extends JFrame {
     private final JButton btnDashboard;
     private final JButton btnEstadisticas;
     
-    private final JButton btnAvanzar;
-    private final JButton btnEntregar;
     
     private Simulador simulador;
 
@@ -73,8 +71,6 @@ public class MainFrame extends JFrame {
         btnDashboard = crearBoton( "Dashboard", TemaUI.AZUL_OSCURO );
         btnEstadisticas = crearBoton("Estadísticas",TemaUI.AZUL_OSCURO );
         ///////////////////////////////////////////////////////////////////////////
-        btnAvanzar = crearBoton( "Avanzar paquete", TemaUI.AZUL_OSCURO);
-        btnEntregar = crearBoton("Avanzar paquete", TemaUI.AZUL_OSCURO );
         
         simulador = new Simulador(dashboardPanel.getControl(), dashboardPanel);
 
@@ -162,8 +158,7 @@ public class MainFrame extends JFrame {
         barraBotones.add(btnNuevoPaquete);
         barraBotones.add(btnDashboard);
         barraBotones.add(btnEstadisticas);
-        barraBotones.add(btnAvanzar);
-         barraBotones.add(btnEntregar);
+       
 
         encabezado.add(
                 panelTitulo,
@@ -244,12 +239,7 @@ public class MainFrame extends JFrame {
         
         //////////////////////////////////////////////////////////////////
         ///
-        btnAvanzar.addActionListener(e -> {
-            dashboardPanel.avanzarPaqueteManual();
-        });
-        btnEntregar.addActionListener(e -> {
-            dashboardPanel.entregarPaqueteManual();
-        });
+       
     }
 
     private void abrirDialogoNuevoPaquete() {

@@ -9,6 +9,20 @@ package lab9_programacion2;
  * @author denam
  */
 public enum PrioridadPaquete {
-    URGENTE, ALTA,NORMAL,BAJA
+    URGENTE(1),
+    ALTA(2),
+    NORMAL(3),
+    BAJA(4);
+
+    private final int nivel;
+
+    PrioridadPaquete(int nivel) {
+        this.nivel = nivel;
+    }
+
+    public int getNivel() {
+        return nivel;
+    }
+ 
     
 }
