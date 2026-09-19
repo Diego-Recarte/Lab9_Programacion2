@@ -41,6 +41,8 @@ public class MainFrame extends JFrame {
     
     private final JButton btnAvanzar;
     private final JButton btnEntregar;
+    
+    private Simulador simulador;
 
     public MainFrame() {
         setTitle("Centro Logístico de Paquetería");
@@ -66,31 +68,15 @@ public class MainFrame extends JFrame {
         btnPausar = crearBoton("Pausar", TemaUI.NARANJA);
         btnReanudar = crearBoton("Reanudar", TemaUI.AZUL);
         btnDetener = crearBoton("Detener", TemaUI.ROJO);
-        btnReiniciar = crearBoton(
-                "Reiniciar",
-                new Color(100, 100, 100)
-        );
-        btnNuevoPaquete = crearBoton(
-                "Nuevo paquete",
-                TemaUI.AZUL
-        );
-        btnDashboard = crearBoton(
-                "Dashboard",
-                TemaUI.AZUL_OSCURO
-        );
-        btnEstadisticas = crearBoton(
-                "Estadísticas",
-                TemaUI.AZUL_OSCURO
-        );
+        btnReiniciar = crearBoton("Reiniciar",  new Color(100, 100, 100));
+        btnNuevoPaquete = crearBoton("Nuevo paquete", TemaUI.AZUL );
+        btnDashboard = crearBoton( "Dashboard", TemaUI.AZUL_OSCURO );
+        btnEstadisticas = crearBoton("Estadísticas",TemaUI.AZUL_OSCURO );
         ///////////////////////////////////////////////////////////////////////////
-        btnAvanzar = crearBoton(
-                "Avanzar paquete",
-                TemaUI.AZUL_OSCURO
-        );
-        btnEntregar = crearBoton(
-                "Avanzar paquete",
-                TemaUI.AZUL_OSCURO
-        );
+        btnAvanzar = crearBoton( "Avanzar paquete", TemaUI.AZUL_OSCURO);
+        btnEntregar = crearBoton("Avanzar paquete", TemaUI.AZUL_OSCURO );
+        
+        simulador = new Simulador(dashboardPanel.getControl(), dashboardPanel);
 
         construirInterfaz();
         configurarEventos();
@@ -229,14 +215,18 @@ public class MainFrame extends JFrame {
         });
 
         btnDetener.addActionListener(e -> {
+            simulador.detener();
+
             dashboardPanel.agregarRegistro(
-                    "Sistema detenido manualmente"
+                    "Detenido"
             );
         });
 
         btnIniciar.addActionListener(e -> {
+            simulador.iniciar();
+
             dashboardPanel.agregarRegistro(
-                    "Simulación iniciada"
+                    "inicio"
             );
         });
 
@@ -292,12 +282,7 @@ public class MainFrame extends JFrame {
         boton.setFocusPainted(false);
 
         boton.setBorder(
-                BorderFactory.createEmptyBorder(
-                        8,
-                        14,
-                        8,
-                        14
-                )
+                BorderFactory.createEmptyBorder( 8,14,8, 14 )
         );
 
         return boton;

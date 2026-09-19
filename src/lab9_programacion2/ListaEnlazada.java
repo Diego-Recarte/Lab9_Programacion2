@@ -11,15 +11,50 @@ package lab9_programacion2;
 
 public class ListaEnlazada<T> {
     
+   
+
     private Nodo<T> cabeza;
     private int tamanio;
+    private final int capacidad;
 
     public ListaEnlazada() {
         cabeza = null;
         tamanio = 0;
+        capacidad = Integer.MAX_VALUE;
     }
 
-    public void agregar(T dato) {
+    public ListaEnlazada(int capacidad) {
+        cabeza = null;
+        tamanio = 0;
+        this.capacidad = capacidad;
+    }
+
+    public synchronized void agregar(T dato) {
+        while (tamanio >= capacidad) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+
+        agregarInternamente(dato);
+        notifyAll();
+    }
+
+    public synchronized void agregarEsperando(T dato)
+            throws InterruptedException {
+
+        while (tamanio >= capacidad) {
+            wait();
+        }
+
+        agregarInternamente(dato);
+        notifyAll();
+    }
+
+    private void agregarInternamente(T dato) {
         Nodo<T> nuevo = new Nodo<>(dato);
 
         if (cabeza == null) {
@@ -37,7 +72,23 @@ public class ListaEnlazada<T> {
         tamanio++;
     }
 
-    public void eliminar(T dato) {
+    public synchronized T eliminarPrimeroEsperando()
+            throws InterruptedException {
+
+        while (cabeza == null) {
+            wait();
+        }
+
+        T dato = cabeza.getDato();
+        cabeza = cabeza.getSiguiente();
+        tamanio--;
+
+        notifyAll();
+
+        return dato;
+    }
+
+    public synchronized void eliminar(T dato) {
         if (cabeza == null) {
             return;
         }
@@ -45,6 +96,7 @@ public class ListaEnlazada<T> {
         if (cabeza.getDato().equals(dato)) {
             cabeza = cabeza.getSiguiente();
             tamanio--;
+            notifyAll();
             return;
         }
 
@@ -52,11 +104,11 @@ public class ListaEnlazada<T> {
 
         while (actual.getSiguiente() != null) {
             if (actual.getSiguiente().getDato().equals(dato)) {
-                actual.setSiguiente(
-                        actual.getSiguiente().getSiguiente()
-                );
+
+                actual.setSiguiente(actual.getSiguiente() .getSiguiente()  );
 
                 tamanio--;
+                notifyAll();
                 return;
             }
 
@@ -64,7 +116,7 @@ public class ListaEnlazada<T> {
         }
     }
 
-    public boolean buscar(T dato) {
+    public synchronized boolean buscar(T dato) {
         Nodo<T> actual = cabeza;
 
         while (actual != null) {
@@ -78,11 +130,9 @@ public class ListaEnlazada<T> {
         return false;
     }
 
-    public T obtener(int posicion) {
+    public synchronized T obtener(int posicion) {
         if (posicion < 0 || posicion >= tamanio) {
-            throw new IndexOutOfBoundsException(
-                    "Posición inválida: " + posicion
-            );
+            throw new IndexOutOfBoundsException( "Posición inválida");
         }
 
         Nodo<T> actual = cabeza;
@@ -94,22 +144,24 @@ public class ListaEnlazada<T> {
         return actual.getDato();
     }
 
-    public void recorrer() {
+    public synchronized void recorrer() {
         Nodo<T> actual = cabeza;
 
         while (actual != null) {
-            
+            System.out.println(actual.getDato());
             actual = actual.getSiguiente();
         }
     }
 
-    public int tamanio() {
+    public synchronized int tamanio() {
         return tamanio;
     }
 
-    public boolean estaVacia() {
+    public synchronized boolean estaVacia() {
         return cabeza == null;
     }
 
-    
+    public int getCapacidad() {
+        return capacidad;
+    }
 }

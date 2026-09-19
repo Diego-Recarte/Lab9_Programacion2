@@ -420,6 +420,133 @@ public class DashboardPanel extends JPanel {
                         + repartidor.getNombre()
         );
     }
+    public void moverVisualmente( Paquete paquete,String origen, String destino) {
+        Runnable accion = () -> {
+            switch (origen) {
+                case "RECEPCION":
+                    eliminarPorCodigo(
+                            panelRecepcion,
+                            paquete.getCodigo()
+                    );
+                    break;
+
+                case "ALMACEN":
+                    eliminarPorCodigo(
+                            panelAlmacen,
+                            paquete.getCodigo()
+                    );
+                    break;
+
+                case "CLASIFICACION":
+                    eliminarPorCodigo(
+                            panelClasificacion,
+                            paquete.getCodigo()
+                    );
+                    break;
+
+                case "EMPAQUETADO":
+                    eliminarPorCodigo(
+                            panelEmpaquetado,
+                            paquete.getCodigo()
+                    );
+                    break;
+
+                case "EXPEDICION":
+                    eliminarPorCodigo(
+                            panelExpedicion,
+                            paquete.getCodigo()
+                    );
+                    break;
+            }
+
+            switch (destino) {
+                case "ALMACEN":
+                    panelAlmacen.agregarFila(
+                            paquete.getCodigo(),
+                            paquete.getCiudad(),
+                            paquete.getPeso() + " kg",
+                            paquete.getPrioridad()
+                    );
+                    break;
+
+                case "CLASIFICACION":
+                    panelClasificacion.agregarFila(
+                            paquete.getCodigo(),
+                            "Clasificador",
+                            paquete.getRuta(),
+                            paquete.getEstado()
+                    );
+                    break;
+
+                case "EMPAQUETADO":
+                    panelEmpaquetado.agregarFila(
+                            paquete.getCodigo(),
+                            "Empaquetador",
+                            paquete.getPeso() + " kg",
+                            paquete.getEstado()
+                    );
+                    break;
+
+                case "EXPEDICION":
+                    panelExpedicion.agregarFila(
+                            paquete.getCodigo(),
+                            paquete.getRuta(),
+                            paquete.getPrioridad(),
+                            paquete.getEstado()
+                    );
+                    break;
+            }
+
+            agregarRegistro(
+                    paquete.getCodigo()
+                            + " pasó a "
+                            + destino
+            );
+        };
+
+        if (SwingUtilities.isEventDispatchThread()) {
+            accion.run();
+        } else {
+            SwingUtilities.invokeLater(accion);
+        }
+    }
+    public void actualizarRepartidores() {
+        if (SwingUtilities.isEventDispatchThread()) {
+            panelRepartidores.actualizarTodos();
+        } else {
+            SwingUtilities.invokeLater(() -> {
+                panelRepartidores.actualizarTodos();
+            });
+        }
+    }
+    public ControlDistribucion getControl() {
+        return centro;
+    }
+    
+    public void moverExpedicionAReparto(Paquete paquete, Repartidor repartidor ) {
+        Runnable actualizar = () -> {
+            eliminarPorCodigo(
+                    panelExpedicion,
+                    paquete.getCodigo()
+            );
+
+            panelRepartidores.actualizarTodos();
+
+            agregarRegistro(
+                    paquete.getCodigo()
+                            + " asignado a "
+                            + repartidor.getNombre()
+            );
+        };
+
+        if (SwingUtilities.isEventDispatchThread()) {
+            actualizar.run();
+        } else {
+            SwingUtilities.invokeLater(actualizar);
+        }
+    }
+   
+    
     public void avanzarPaqueteManual() {/////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (!centro.getListaRecepcion().estaVacia()) {
             Paquete paquete =centro.getListaRecepcion().obtener(0);

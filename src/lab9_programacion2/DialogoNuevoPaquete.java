@@ -51,7 +51,7 @@ public class DialogoNuevoPaquete extends JDialog {
                 new String[]{
                         "Seleccione una ciudad",
                         "Tegucigalpa",
-                        "San Pedro",
+                        "San Pedro Sula",
                         "Tela",
                         "Guatemala"
                 }
